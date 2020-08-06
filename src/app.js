@@ -1,3 +1,4 @@
+import './app.css';
 import moment from 'moment';
 
 const timeElement = document.querySelector('.time');

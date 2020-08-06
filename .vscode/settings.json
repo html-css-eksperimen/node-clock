@@ -12,7 +12,7 @@
         "venv": true,
         "*.sublime-*": true,
         "env*": true,
-        "dist": true,
+        "dist": false,
         "**/.svn": true,
         "**/.hg": true,
         "**/CVS": true
