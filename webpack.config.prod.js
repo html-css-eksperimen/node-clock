@@ -1,12 +1,55 @@
+/* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable @typescript-eslint/no-var-requires */
 const path = require('path');
 const HtmlWebPackPlugin = require('html-webpack-plugin');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
+const MomentLocalesPlugin = require('moment-locales-webpack-plugin');
 
 module.exports = {
     mode: 'production',
-    // entry: {
-    //     main: './src/app.js',
-    // },
+    optimization: {
+        minimize: true,
+        minimizer: [
+            new UglifyJsPlugin({
+                uglifyOptions: {
+                    output: {
+                        comments: false,
+                    },
+                    mangle: true,
+                    compress: {
+                        sequences: true,
+                        dead_code: true,
+                        conditionals: true,
+                        booleans: true,
+                        unused: true,
+                        if_return: true,
+                        join_vars: true,
+                        drop_console: true,
+                    },
+                },
+                parallel: true,
+                sourceMap: true,
+            }),
+            new TerserPlugin({
+                parallel: true,
+                sourceMap: true,
+                extractComments: false,
+                terserOptions: {
+                    output: {
+                        comments: false,
+                    },
+                },
+            }),
+        ],
+        splitChunks: {
+            chunks: 'all',
+            minSize: 20000,
+            maxSize: 100000,
+            maxAsyncRequests: 30,
+            maxInitialRequests: 30,
+        },
+    },
     entry: path.resolve(__dirname, 'src', 'app.js'),
     output: {
         filename: '[name].bundle.js',
@@ -26,67 +69,13 @@ module.exports = {
                 },
             },
             {
-                test: /\.scss$/,
-                use: [
-                    {
-                        loader: 'style-loader',
-                        options: {
-                            insert: 'body',
-                        },
-                    },
-                    {
-                        loader: 'css-loader',
-                        options: {
-                            sourceMap: true,
-                            modules: true,
-                            localIdentName: '[local]_[hash:base64:5]',
-                        },
-                    },
-                    {
-                        loader: 'postcss-loader',
-                        options: {
-                            sourceMap: true,
-                            config: {
-                                path: 'postcss.config.js',
-                            },
-                        },
-                    },
-                    {
-                        loader: 'sass-loader',
-                        options: { sourceMap: true },
-                    },
-                ],
-            },
-            {
                 test: /\.css$/,
                 use: [
                     {
                         loader: 'style-loader',
-                        options: {
-                            insert: 'body',
-                        },
                     },
-                    'extract-loader',
-                    'css-loader',
-                ],
-            },
-            {
-                test: /\.html$/,
-                use: [
                     {
-                        loader: 'html-loader',
-                    },
-                ],
-            },
-            {
-                test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
-                use: [
-                    {
-                        loader: 'file-loader',
-                        options: {
-                            name: '[name].[ext]',
-                            outputPath: 'fonts/',
-                        },
+                        loader: 'css-loader',
                     },
                 ],
             },
@@ -95,10 +84,21 @@ module.exports = {
     plugins: [
         new HtmlWebPackPlugin({
             template: './src/index.html',
-            filename: './index.html',
+            filename: 'index.html',
+            scriptLoading: 'defer',
+            inject: 'body',
+        }),
+        new MomentLocalesPlugin({
+            localesToKeep: ['id'],
         }),
     ],
-    resolve: {
-        extensions: ['.js', '.jsx'],
+    devServer: {
+        contentBase: path.join(__dirname, 'dist'),
+        compress: true,
+        port: 4200,
+        hot: false,
+        liveReload: true,
+        publicPath: '/',
+        watchContentBase: true,
     },
 };

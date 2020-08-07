@@ -1,11 +1,13 @@
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable @typescript-eslint/no-var-requires */
 const path = require('path');
-const HtmlWebPackPlugin = require('html-webpack-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
+const { merge } = require('webpack-merge');
+const common = require('./webpack.config.common');
 
-module.exports = {
+const prodConf = {
     mode: 'production',
     // entry: {
     //     main: './src/app.js',
@@ -17,9 +19,42 @@ module.exports = {
                     output: {
                         comments: false,
                     },
+                    mangle: true,
+                    compress: {
+                        sequences: true,
+                        dead_code: true,
+                        conditionals: true,
+                        booleans: true,
+                        unused: true,
+                        if_return: true,
+                        join_vars: true,
+                        drop_console: true,
+                    },
                 },
                 parallel: true,
                 sourceMap: true,
+            }),
+            new TerserPlugin({
+                parallel: true,
+                sourceMap: true,
+                extractComments: false,
+                terserOptions: {
+                    output: {
+                        comments: false,
+                    },
+                },
+            }),
+            new CssMinimizerPlugin({
+                parallel: true,
+                sourceMap: true,
+                minimizerOptions: {
+                    preset: [
+                        'default',
+                        {
+                            discardComments: { removeAll: true },
+                        },
+                    ],
+                },
             }),
         ],
         splitChunks: {
@@ -41,41 +76,16 @@ module.exports = {
                     loader: 'babel-loader',
                     options: {
                         presets: ['@babel/preset-env'],
-                        plugins: ['@babel/plugin-proposal-object-rest-spread'],
+                        plugins: [
+                            '@babel/plugin-proposal-object-rest-spread',
+                            '@babel/plugin-transform-runtime',
+                        ],
                     },
                 },
             },
-            {
-                test: /\.css$/,
-                use: [
-                    {
-                        loader: 'style-loader',
-                    },
-                    MiniCssExtractPlugin.loader,
-                    'css-loader',
-                ],
-            },
-            {
-                test: /\.css$/i,
-                use: [MiniCssExtractPlugin.loader, 'css-loader'],
-            },
-            {
-                test: /\.html$/,
-                use: [
-                    {
-                        loader: 'html-loader',
-                    },
-                ],
-            },
         ],
     },
-    plugins: [
-        new HtmlWebPackPlugin({
-            filename: 'index.html',
-            scriptLoading: 'defer',
-        }),
-    ],
-    resolve: {
-        extensions: ['.js', '.jsx'],
-    },
+    plugins: [],
 };
+
+module.exports = merge(common, prodConf);

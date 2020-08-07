@@ -9,7 +9,11 @@
     "deploygithub": "parcel build src/index.html --no-source-maps --public-url /your-github-project-name/",
     "removedist": "rm -rf ./dist/*",
     "webbuild": "webpack --config webpack.prod.js",
-    "webtest": "webpack --config webpack.config.test.js"
+    "buildweb": "webpack --config webpack.config.prod.js",
+    "testprod": "webpack-dev-server --config webpack.config.prod.js",
+    "testdebug": "webpack-dev-server --config webpack.config.dev.js",
+    "mergedebug": "webpack-dev-server --config webpack.dev.js",
+    "mergebuild": "webpack --config webpack.prod.js"
   },
   "keywords": [
     "boilerplate"
@@ -37,6 +41,7 @@
     "autoprefixer": "^9.8.6",
     "babel-loader": "^8.1.0",
     "css-loader": "^4.2.0",
+    "css-minimizer-webpack-plugin": "^1.1.0",
     "eslint": "^7.6.0",
     "eslint-config-airbnb": "^18.2.0",
     "eslint-config-node": "^4.1.0",
@@ -64,10 +69,12 @@
     "uglifyjs-webpack-plugin": "^2.2.0",
     "webpack": "^4.44.1",
     "webpack-cli": "^3.3.12",
-    "webpack-dev-server": "^3.11.0"
+    "webpack-dev-server": "^3.11.0",
+    "webpack-merge": "^5.1.1"
   },
   "dependencies": {
     "@babel/runtime": "^7.11.1",
+    "bootstrap": "^4.5.2",
     "jquery": "^3.5.1",
     "moment": "^2.27.0"
   }
