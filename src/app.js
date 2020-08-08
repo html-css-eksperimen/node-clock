@@ -1,6 +1,7 @@
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import './app.css';
 import moment from 'moment';
+import { createPopper } from '@popperjs/core';
 
 const timeElement = document.querySelector('.time');
 const dateElement = document.querySelector('.date');
@@ -20,3 +21,7 @@ const updateTime = () => {
 };
 
 updateTime();
+
+const popcorn = document.querySelector('#popcorn');
+const tooltip = document.querySelector('#tooltip');
+createPopper(popcorn, tooltip);
